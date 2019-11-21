@@ -42,7 +42,7 @@ function tp ()
     i_load_dirlist()
     {
       local -i jj
-      jj=0
+      jj=1
       while read line
       do
         dirlist[jj]="$line"
@@ -136,7 +136,7 @@ function tp ()
       i_load_dirlist
       for (( ii=listsize-1; ii >= 0; ii-- ))
       do
-        printf "%2d  %s\n" $(( listsize - ii )) "${dirlist[ii]}"
+        printf "%2d  %s\n" $(( listsize - ii )) "${dirlist[ii+1]}"
       done
       echo ""
       unset dirlist
@@ -151,9 +151,9 @@ function tp ()
       i_load_dirlist
       for (( ii=listsize-1; ii >= 0; ii-- ))
       do
-        if [[ "${dirlist[ii]}" =~ "$searchFor" ]]
+        if [[ "${dirlist[ii+1]}" =~ "$searchFor" ]]
         then
-          printf "%2d  %s\n" $(( listsize - ii )) "${dirlist[ii]}"
+          printf "%2d  %s\n" $(( listsize - ii )) "${dirlist[ii+1]}"
         fi
       done
       unset dirlist
@@ -168,9 +168,9 @@ function tp ()
       i_load_dirlist
       for (( ii=listsize-1; ii >= 0; ii-- ))
       do
-        if [[ "${dirlist[ii]}" =~ "$searchFor" ]]
+        if [[ "${dirlist[ii+1]}" =~ "$searchFor" ]]
         then
-          i_go "${dirlist[ii]}"
+          i_go "${dirlist[ii+1]}"
           return 0
         fi
       done
@@ -197,7 +197,7 @@ function tp ()
       ii=0
       while read line
       do
-        dirlist[ii]="$line"
+        dirlist[ii+1]="$line"
         (( ii++ ))
       done < $TP_HISTORY_FILE
 
@@ -210,7 +210,7 @@ function tp ()
       # go to the calculated line
       numrecs=`wc -l $TP_HISTORY_FILE | awk '{ print $1 }'`
       (( lineNeeded = numrecs - desiredLine ))
-      i_go "${dirlist[$lineNeeded]}"
+      i_go "${dirlist[$lineNeeded + 1]}"
 
       unset dirlist
       return 0
@@ -303,9 +303,9 @@ function i_addToHistory()
   for (( ii=0; ii < listsize; ii++ ))
   do
     # no duplicates allowed in the history file
-    if [ "$currentDir" != "${dirlist[ii]}" ]
+    if [ "$currentDir" != "${dirlist[ii+1]}" ]
     then
-      echo ${dirlist[ii]} >> $TP_HISTORY_FILE
+      echo ${dirlist[ii+1]} >> $TP_HISTORY_FILE
     fi
   done
   
